@@ -5,10 +5,19 @@ import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { Audio } from 'expo-av';
-import { startSpeechRecognition } from '@/modules/speech-recognition';
+import { addOKListener, startSpeechRecognition } from '@/modules/speech-recognition';
+import { useEffect } from 'react';
 
 export default function HomeScreen() {
   const [permissionResponse, requestPermission] = Audio.usePermissions();
+
+  useEffect(() => {
+    const eventSubscription = addOKListener((event) => {
+      ToastAndroid.show(event.value, ToastAndroid.SHORT);
+    });
+
+    return () => eventSubscription.remove();
+  })
 
   const startRecording = async () => {
     try {

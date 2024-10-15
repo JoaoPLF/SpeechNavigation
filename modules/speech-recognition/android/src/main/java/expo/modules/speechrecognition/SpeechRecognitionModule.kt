@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.speech.RecognitionListener
 import android.speech.RecognizerIntent
 import android.speech.SpeechRecognizer
+import android.util.Log
 import expo.modules.kotlin.functions.Queues
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
@@ -18,61 +19,70 @@ class SpeechRecognitionModule : Module() {
   init {
     recognitionListener = object : RecognitionListener {
       override fun onReadyForSpeech(params: Bundle?) {
-        TODO("Not yet implemented")
+        Log.d("Speech Listener", "onReadyForSpeech")
       }
 
       override fun onBeginningOfSpeech() {
-        TODO("Not yet implemented")
+        Log.d("Speech Listener", "onBeginningOfSpeech")
       }
 
       override fun onRmsChanged(rmsdB: Float) {
-        TODO("Not yet implemented")
+        Log.d("Speech Listener", "onRmsChanged")
       }
 
       override fun onBufferReceived(buffer: ByteArray?) {
-        TODO("Not yet implemented")
+        Log.d("Speech Listener", "onBufferReceived")
       }
 
       override fun onEndOfSpeech() {
-        TODO("Not yet implemented")
+        Log.d("Speech Listener", "onEndOfSpeech")
       }
 
       override fun onError(error: Int) {
-        TODO("Not yet implemented")
+        Log.d("Speech Listener", "onError")
       }
 
       override fun onResults(results: Bundle?) {
-        TODO("Not yet implemented")
+        Log.d("Speech Listener", "onResults")
+        Log.d("Speech Listener", results?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION).toString())
+
+        sendEvent("OK", mapOf(
+          "value" to results?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION).toString()
+        ))
       }
 
       override fun onPartialResults(partialResults: Bundle?) {
-        TODO("Not yet implemented")
+        Log.d("Speech Listener", "onPartialResults")
       }
 
       override fun onEvent(eventType: Int, params: Bundle?) {
-        TODO("Not yet implemented")
+        Log.d("Speech Listener", "onEvent")
       }
-
     }
   }
 
   override fun definition() = ModuleDefinition {
     Name("SpeechRecognition")
 
-    Events("onChange")
+    Events("onChange", "OK")
 
     AsyncFunction("startSpeechRecognition") {
-      speechRecognizer = SpeechRecognizer.createSpeechRecognizer(appContext.reactContext)
+      if (speechRecognizer == null) {
+        speechRecognizer = SpeechRecognizer.createSpeechRecognizer(appContext.reactContext)
 
-      val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
-        putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
-        putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.US)
+        val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
+          putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
+          putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.US)
+        }
+
+        speechRecognizer?.setRecognitionListener(recognitionListener)
+        speechRecognizer?.startListening(intent)
       }
-
-      speechRecognizer?.setRecognitionListener(recognitionListener)
-      speechRecognizer?.startListening(intent)
-
-      sendEvent("OK")
+      else {
+        speechRecognizer?.stopListening()
+        speechRecognizer?.destroy()
+        speechRecognizer = null
+      }
     }.runOnQueue(Queues.MAIN)
 
     AsyncFunction("stopSpeechRecognition") {
@@ -80,7 +90,9 @@ class SpeechRecognitionModule : Module() {
       speechRecognizer?.destroy()
       speechRecognizer = null
 
-      sendEvent("OK")
+      sendEvent("OK", mapOf(
+        "value" to "value"
+      ))
     }.runOnQueue(Queues.MAIN)
 
     // Defines a JavaScript function that always returns a Promise and whose native code
