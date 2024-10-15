@@ -2,10 +2,6 @@ export type ChangeEventPayload = {
   value: string;
 };
 
-export type OKEventPayload = {
+export type SpeechResultEventPayload = {
   value: string;
-};
-
-export type SpeechRecognitionViewProps = {
-  name: string;
 };
