@@ -1,8 +1,19 @@
-import { router } from "expo-router";
+import { Href, router } from "expo-router";
 
-enum Screens {
-  Home = 'home',
-  Explore = 'explore',
+type Screen = {
+  path: Href<string | object>;
+  name: string;
+}
+
+const Screens: Record<string, Screen> = {
+  home: {
+    path: "/(tabs)",
+    name: "home"
+  },
+  explore: {
+    path: "/(tabs)/explore",
+    name: "explore"
+  }
 }
 
 const isNavigationCommand = (value: string) => {
@@ -10,7 +21,7 @@ const isNavigationCommand = (value: string) => {
 }
 
 const getScreen = (value: string) => {
-  return Object.values(Screens).find((screen) => value.match(screen)?.[0]);
+  return Object.values(Screens).find(({ name: screenName }) => value.match(screenName)?.[0]);
 }
 
 export const speechNavigate = (value: string) => {
@@ -21,6 +32,6 @@ export const speechNavigate = (value: string) => {
   const screen = getScreen(value);
 
   if (!!screen) {
-    router.navigate(screen);
+    router.navigate(screen.path);
   }
 }

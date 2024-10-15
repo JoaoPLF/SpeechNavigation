@@ -5,7 +5,6 @@ import { NativeModulesProxy, EventEmitter, Subscription } from 'expo-modules-cor
 import SpeechRecognitionModule from './src/SpeechRecognitionModule';
 import SpeechRecognitionView from './src/SpeechRecognitionView';
 import { ChangeEventPayload, OKEventPayload, SpeechRecognitionViewProps } from './src/SpeechRecognition.types';
-import { ToastAndroid } from 'react-native';
 
 export async function startSpeechRecognition() {
   return await SpeechRecognitionModule.startSpeechRecognition();
