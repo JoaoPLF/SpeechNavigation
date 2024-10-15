@@ -1,11 +1,28 @@
-import { Image, StyleSheet, Platform } from 'react-native';
+import { Image, StyleSheet, Platform, Button, ToastAndroid } from 'react-native';
 
 import { HelloWave } from '@/components/HelloWave';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
+import { Audio } from 'expo-av';
+import { startSpeechRecognition } from '@/modules/speech-recognition';
 
 export default function HomeScreen() {
+  const [permissionResponse, requestPermission] = Audio.usePermissions();
+
+  const startRecording = async () => {
+    try {
+      if (permissionResponse?.status !== 'granted') {
+        await requestPermission();
+      }
+
+      await startSpeechRecognition();
+    }
+    catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
     <ParallaxScrollView
       headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
@@ -18,6 +35,7 @@ export default function HomeScreen() {
       <ThemedView style={styles.titleContainer}>
         <ThemedText type="title">Welcome!</ThemedText>
         <HelloWave />
+        <Button title="Start Recording" onPress={startRecording} />
       </ThemedView>
       <ThemedView style={styles.stepContainer}>
         <ThemedText type="subtitle">Step 1: Try it</ThemedText>

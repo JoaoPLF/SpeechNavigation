@@ -6,15 +6,8 @@ import SpeechRecognitionModule from './src/SpeechRecognitionModule';
 import SpeechRecognitionView from './src/SpeechRecognitionView';
 import { ChangeEventPayload, SpeechRecognitionViewProps } from './src/SpeechRecognition.types';
 
-// Get the native constant value.
-export const PI = SpeechRecognitionModule.PI;
-
-export function hello(): string {
-  return SpeechRecognitionModule.hello();
-}
-
-export async function setValueAsync(value: string) {
-  return await SpeechRecognitionModule.setValueAsync(value);
+export async function startSpeechRecognition() {
+  return await SpeechRecognitionModule.startSpeechRecognition();
 }
 
 const emitter = new EventEmitter(SpeechRecognitionModule ?? NativeModulesProxy.SpeechRecognition);
