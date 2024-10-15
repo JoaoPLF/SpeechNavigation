@@ -14,7 +14,6 @@ import java.util.Locale
 class SpeechRecognitionModule : Module() {
   private var speechRecognizer: SpeechRecognizer? = null
   private val recognitionListener: RecognitionListener
-  private var response: ArrayList<String>? = null
 
   init {
     recognitionListener = object : RecognitionListener {
@@ -46,7 +45,7 @@ class SpeechRecognitionModule : Module() {
         Log.d("Speech Listener", "onResults")
         Log.d("Speech Listener", results?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION).toString())
 
-        sendEvent("OK", mapOf(
+        sendEvent("onSpeechResult", mapOf(
           "value" to results?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION).toString()
         ))
       }
@@ -64,7 +63,7 @@ class SpeechRecognitionModule : Module() {
   override fun definition() = ModuleDefinition {
     Name("SpeechRecognition")
 
-    Events("onChange", "OK")
+    Events("onChange", "onSpeechResult")
 
     AsyncFunction("startSpeechRecognition") {
       if (speechRecognizer == null) {

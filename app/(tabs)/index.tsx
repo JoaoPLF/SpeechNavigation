@@ -7,6 +7,7 @@ import { ThemedView } from '@/components/ThemedView';
 import { Audio } from 'expo-av';
 import { addOKListener, startSpeechRecognition } from '@/modules/speech-recognition';
 import { useEffect } from 'react';
+import { speechNavigate } from '@/libs/speechNavigation';
 
 export default function HomeScreen() {
   const [permissionResponse, requestPermission] = Audio.usePermissions();
@@ -14,6 +15,7 @@ export default function HomeScreen() {
   useEffect(() => {
     const eventSubscription = addOKListener((event) => {
       ToastAndroid.show(event.value, ToastAndroid.SHORT);
+      speechNavigate(event.value);
     });
 
     return () => eventSubscription.remove();
