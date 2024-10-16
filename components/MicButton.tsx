@@ -2,7 +2,7 @@ import { addEndOfSpeechListener, addReadyForSpeechListener, startSpeechRecogniti
 import { FontAwesome } from "@expo/vector-icons";
 import { Audio } from "expo-av";
 import { useEffect, useState } from "react";
-import { StyleSheet, View } from "react-native";
+import { Linking, StyleSheet, ToastAndroid, View } from "react-native";
 
 export const MicButton = () => {
   const [isRecording, setIsRecording] = useState(false);
@@ -25,8 +25,14 @@ export const MicButton = () => {
 
   const startRecording = async () => {
     try {
-      if (permissionResponse?.status !== 'granted') {
+      if (!!permissionResponse?.canAskAgain) {
         await requestPermission();
+      }
+
+      if (permissionResponse?.status === 'denied') {
+        ToastAndroid.show('Enable microphone permissions in settings', ToastAndroid.LONG);
+        await Linking.openSettings();
+        return;
       }
 
       await startSpeechRecognition();
