@@ -1,50 +1,14 @@
-# Welcome to your Expo app 👋
+# Accessibility PoC - Speech Navigation
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+It is know that some areas are harder to reach with our thumbs when holding a phone:
 
-## Get started
+<img width="548" alt="thumb" src="https://github.com/user-attachments/assets/e9ac6c1f-cb6a-40ea-abb4-a48d57ea2c56">
 
-1. Install dependencies
+And some screens are usually many taps away. The problem is even bigger if you have a drawer menu - usually on the top left, out of reach for your thumb!
+With that in mind, I developed this proof of concept (PoC) that uses Android's `SpeechRecognizer` API to navigate between screens.
 
-   ```bash
-   npm install
-   ```
+## Technical details
 
-2. Start the app
-
-   ```bash
-    npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
-```
-
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+The project was created with React Native + Expo, with no changes to the default project besides the inclusion of the `MicButton` in the main layout file.
+A native module was developed in Kotlin to access the `SpeechRecognizer` API, making some functions and events available to JS.
+Finally, the `MicButton` was created and animated to give the user some feedback. It parses the result of speech and looks for commands like `navigate to` and `go to` plus a route. If it finds a match, it will navigate to the respective screen.
