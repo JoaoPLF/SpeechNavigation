@@ -21,15 +21,6 @@ export default function RootLayout() {
   });
 
   useEffect(() => {
-    const eventSubscription = addSpeechResultListener((event) => {
-      ToastAndroid.show(event.value, ToastAndroid.SHORT);
-      speechNavigate(event.value);
-    });
-
-    return () => eventSubscription.remove();
-  }, []);
-
-  useEffect(() => {
     if (loaded) {
       SplashScreen.hideAsync();
     }
