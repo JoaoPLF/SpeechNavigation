@@ -1,6 +1,6 @@
 # Accessibility PoC - Speech Navigation
 
-It is know that some areas are harder to reach with our thumbs when holding a phone:
+It is known that some areas are harder to reach with our thumbs when holding a phone:
 
 <img width="548" alt="thumb" src="https://github.com/user-attachments/assets/e9ac6c1f-cb6a-40ea-abb4-a48d57ea2c56">
 
