@@ -6,16 +6,11 @@ import { useRecording } from "@/hooks/useRecording";
 
 export const MicButton = () => {
   const { isRecording, toggleRecording } = useRecording();
-  const { animatedStyle, onLayout, animateWidth } = useMicAnimation();
-
-  const onButtonPress = () => {
-    toggleRecording();
-    animateWidth(isRecording);
-  }
+  const { animatedStyle, onLayout } = useMicAnimation(isRecording);
 
   return (
     <Animated.View style={[styles.button, animatedStyle]}>
-      <FontAwesome.Button name={isRecording ? "stop" : "microphone"} iconStyle={{ marginRight: 0 }} onPress={onButtonPress} onLayout={onLayout} />
+      <FontAwesome.Button name={isRecording ? "stop" : "microphone"} iconStyle={{ marginRight: 0 }} onPress={toggleRecording} onLayout={onLayout} />
     </Animated.View>
   );
 };
