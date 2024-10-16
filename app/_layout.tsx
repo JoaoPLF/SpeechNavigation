@@ -6,9 +6,6 @@ import { useEffect } from 'react';
 import 'react-native-reanimated';
 
 import { useColorScheme } from '@/hooks/useColorScheme';
-import { ToastAndroid } from 'react-native';
-import { speechNavigate } from '@/libs/speechNavigation';
-import { addSpeechResultListener } from '@/modules/speech-recognition';
 import { MicButton } from '@/components/MicButton';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.

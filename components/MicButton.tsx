@@ -25,7 +25,7 @@ export const MicButton = () => {
 
 const styles = StyleSheet.create({
   container: {
-    bottom: 16,
+    bottom: 60,
     right: 16,
     position: "absolute"
   },
