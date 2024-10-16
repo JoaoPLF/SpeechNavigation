@@ -5,20 +5,32 @@ import { useMicAnimation } from "@/hooks/useMicAnimation";
 import { useRecording } from "@/hooks/useRecording";
 
 export const MicButton = () => {
-  const { isRecording, toggleRecording } = useRecording();
+  const { isRecording, buttonText, toggleRecording } = useRecording();
   const { animatedStyle, onLayout } = useMicAnimation(isRecording);
 
   return (
-    <Animated.View style={[styles.button, animatedStyle]}>
-      <FontAwesome.Button name={isRecording ? "stop" : "microphone"} iconStyle={{ marginRight: 0 }} onPress={toggleRecording} onLayout={onLayout} />
+    <Animated.View style={[styles.container, animatedStyle]}>
+      <FontAwesome.Button
+        name={isRecording ? "stop" : "microphone"}
+        style={{ ...styles.button, justifyContent: isRecording ? "flex-start" : "center", gap: 8 }}
+        iconStyle={{ marginRight: 0 }}
+        onLayout={onLayout}
+        onPress={toggleRecording}
+      >
+        {isRecording ? buttonText : null}
+      </FontAwesome.Button>
     </Animated.View>
   );
 };
 
 const styles = StyleSheet.create({
-  button: {
+  container: {
     bottom: 16,
     right: 16,
     position: "absolute"
+  },
+  button: {
+    height: 48,
+    maxHeight: 48,
   }
 });

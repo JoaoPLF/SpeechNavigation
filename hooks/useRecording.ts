@@ -4,27 +4,35 @@ import { Audio } from "expo-av";
 import { useEffect, useState } from "react";
 import { Linking, ToastAndroid } from "react-native";
 
+const DEFAULT_BUTTON_TEXT = "Say something...";
+
 export const useRecording = () => {
   const [isRecording, setIsRecording] = useState(false);
+  const [buttonText, setButtonText] = useState(DEFAULT_BUTTON_TEXT);
   const [permissionResponse, requestPermission] = Audio.usePermissions();
 
   useEffect(() => {
     const readyForSpeechSubscription = addReadyForSpeechListener(() => {
       setIsRecording(true);
+      setButtonText(DEFAULT_BUTTON_TEXT);
     });
 
+    let timeout: NodeJS.Timeout | null = null;
     const endOfSpeechSubscription = addEndOfSpeechListener(() => {
-      setIsRecording(false);
+      timeout = setTimeout(() => {
+        setIsRecording(false);
+      }, 750);
     });
 
     const speechResultSubscription = addSpeechResultListener((event) => {
-      ToastAndroid.show(event.value, ToastAndroid.SHORT);
+      setButtonText(event.value);
       speechNavigate(event.value);
     });
 
     return () => {
       readyForSpeechSubscription.remove();
       endOfSpeechSubscription.remove();
+      !!timeout && clearTimeout(timeout);
       speechResultSubscription.remove();
     };
   }, []);
@@ -62,5 +70,5 @@ export const useRecording = () => {
     isRecording ? stopRecording() : startRecording();
   };
 
-  return { isRecording, toggleRecording };
+  return { isRecording, buttonText, toggleRecording };
 };

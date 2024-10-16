@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef } from "react";
 import { Dimensions, LayoutChangeEvent } from "react-native";
-import { useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
+import { Easing, useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
 
 const MARGIN = 32;
 
@@ -9,7 +9,7 @@ export const useMicAnimation = (isRecording: boolean) => {
   const initialWidth = useRef(0);
   const screenWidth = useMemo(() => Dimensions.get("screen").width - MARGIN, []);
 
-  const sharedWidth = useSharedValue(initialWidth.current);
+  const sharedWidth = useSharedValue(48);
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
@@ -29,7 +29,7 @@ export const useMicAnimation = (isRecording: boolean) => {
   };
 
   useEffect(() => {
-    sharedWidth.value = withTiming(isRecording ? screenWidth : initialWidth.current, { duration: 300 });
+    sharedWidth.value = withTiming(isRecording ? screenWidth : 48, { duration: 300, easing: Easing.out(Easing.quad) });
   }, [isRecording]);
 
   return {
