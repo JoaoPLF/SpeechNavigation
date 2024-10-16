@@ -13,85 +13,77 @@ import java.util.Locale
 
 class SpeechRecognitionModule : Module() {
   private var speechRecognizer: SpeechRecognizer? = null
-  private val recognitionListener: RecognitionListener
+  private val recognitionListener: RecognitionListener = object : RecognitionListener {
+    override fun onReadyForSpeech(params: Bundle?) {
+      Log.d("Speech Listener", "onReadyForSpeech")
 
-  init {
-    recognitionListener = object : RecognitionListener {
-      override fun onReadyForSpeech(params: Bundle?) {
-        Log.d("Speech Listener", "onReadyForSpeech")
-      }
+      sendEvent("onReadyForSpeech")
+    }
 
-      override fun onBeginningOfSpeech() {
-        Log.d("Speech Listener", "onBeginningOfSpeech")
-      }
+    override fun onBeginningOfSpeech() {
+      Log.d("Speech Listener", "onBeginningOfSpeech")
+    }
 
-      override fun onRmsChanged(rmsdB: Float) {
-        Log.d("Speech Listener", "onRmsChanged")
-      }
+    override fun onRmsChanged(rmsdB: Float) {
+      Log.d("Speech Listener", "onRmsChanged")
+    }
 
-      override fun onBufferReceived(buffer: ByteArray?) {
-        Log.d("Speech Listener", "onBufferReceived")
-      }
+    override fun onBufferReceived(buffer: ByteArray?) {
+      Log.d("Speech Listener", "onBufferReceived")
+    }
 
-      override fun onEndOfSpeech() {
-        Log.d("Speech Listener", "onEndOfSpeech")
-      }
+    override fun onEndOfSpeech() {
+      Log.d("Speech Listener", "onEndOfSpeech")
 
-      override fun onError(error: Int) {
-        Log.d("Speech Listener", "onError")
-      }
+      sendEvent("onEndOfSpeech")
+    }
 
-      override fun onResults(results: Bundle?) {
-        Log.d("Speech Listener", "onResults")
-        Log.d("Speech Listener", results?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION).toString())
+    override fun onError(error: Int) {
+      Log.d("Speech Listener", "onError")
+    }
 
-        sendEvent("onSpeechResult", mapOf(
-          "value" to results?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION).toString()
-        ))
-      }
+    override fun onResults(results: Bundle?) {
+      Log.d("Speech Listener", "onResults")
+      Log.d("Speech Listener", results?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION).toString())
 
-      override fun onPartialResults(partialResults: Bundle?) {
-        Log.d("Speech Listener", "onPartialResults")
-      }
+      sendEvent("onSpeechResult", mapOf(
+        "value" to results?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION).toString()
+      ))
 
-      override fun onEvent(eventType: Int, params: Bundle?) {
-        Log.d("Speech Listener", "onEvent")
-      }
+      speechRecognizer?.destroy()
+      speechRecognizer = null
+    }
+
+    override fun onPartialResults(partialResults: Bundle?) {
+      Log.d("Speech Listener", "onPartialResults")
+    }
+
+    override fun onEvent(eventType: Int, params: Bundle?) {
+      Log.d("Speech Listener", "onEvent")
     }
   }
 
   override fun definition() = ModuleDefinition {
     Name("SpeechRecognition")
 
-    Events("onChange", "onSpeechResult")
+    Events("onReadyForSpeech", "onEndOfSpeech", "onSpeechResult")
 
     AsyncFunction("startSpeechRecognition") {
-      if (speechRecognizer == null) {
-        speechRecognizer = SpeechRecognizer.createSpeechRecognizer(appContext.reactContext)
+      speechRecognizer = SpeechRecognizer.createSpeechRecognizer(appContext.reactContext)
 
-        val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
-          putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
-          putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.US)
-        }
+      val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
+        putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
+        putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.US)
+      }
 
-        speechRecognizer?.setRecognitionListener(recognitionListener)
-        speechRecognizer?.startListening(intent)
-      }
-      else {
-        speechRecognizer?.stopListening()
-        speechRecognizer?.destroy()
-        speechRecognizer = null
-      }
+      speechRecognizer?.setRecognitionListener(recognitionListener)
+      speechRecognizer?.startListening(intent)
     }.runOnQueue(Queues.MAIN)
 
     AsyncFunction("stopSpeechRecognition") {
-      speechRecognizer?.stopListening()
       speechRecognizer?.destroy()
       speechRecognizer = null
-
-      sendEvent("OK", mapOf(
-        "value" to "value"
-      ))
+      null
     }.runOnQueue(Queues.MAIN)
   }
 }

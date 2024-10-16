@@ -1,10 +1,27 @@
-import { startSpeechRecognition } from "@/modules/speech-recognition";
+import { addEndOfSpeechListener, addReadyForSpeechListener, startSpeechRecognition, stopSpeechRecognition } from "@/modules/speech-recognition";
 import { FontAwesome } from "@expo/vector-icons";
 import { Audio } from "expo-av";
+import { useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
 
 export const MicButton = () => {
+  const [isRecording, setIsRecording] = useState(false);
   const [permissionResponse, requestPermission] = Audio.usePermissions();
+
+  useEffect(() => {
+    const readyForSpeechSubscription = addReadyForSpeechListener(() => {
+      setIsRecording(true);
+    });
+
+    const endOfSpeechSubscription = addEndOfSpeechListener(() => {
+      setIsRecording(false);
+    });
+
+    return () => {
+      readyForSpeechSubscription.remove();
+      endOfSpeechSubscription.remove();
+    };
+  }, []);
 
   const startRecording = async () => {
     try {
@@ -19,9 +36,19 @@ export const MicButton = () => {
     }
   };
 
+  const stopRecording = async () => {
+    try {
+      await stopSpeechRecognition();
+      setIsRecording(false);
+    }
+    catch (error) {
+      console.error(error);
+    }
+  }
+
   return (
     <View style={styles.button}>
-      <FontAwesome.Button name="microphone" iconStyle={{ marginRight: 0 }} onPress={startRecording} />
+      <FontAwesome.Button name={isRecording ? "stop" : "microphone"} iconStyle={{ marginRight: 0 }} onPress={() => isRecording ? stopRecording() : startRecording()} />
     </View>
   );
 };
@@ -31,10 +58,5 @@ const styles = StyleSheet.create({
     bottom: 16,
     right: 16,
     position: "absolute",
-  },
-  b: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center"
   }
 });
